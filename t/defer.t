@@ -5,10 +5,11 @@ use strict;
 
 use String::Defer;
 use t::Utils;
+use Scalar::Util qw/refaddr/;
 
 my $targ    = "foo";
 my $defer   = eval { String::Defer->new(\$targ) };
-my $defer2; # this needs to be declared before the eval"" below
+my ($other, $targ2, $copy); # these needs to be declared before setup()
 
 ok defined $defer,          "new accepts a scalar ref";
 is_defer $defer,            "new returns a String::Defer"
@@ -21,11 +22,19 @@ $targ = "bar";
 is $defer->force, "bar",    "forcing is deferred";
 is "$defer", "bar",         "stringify is deferred";
 
-sub check_expr {
-    my ($what, $pat, $setup) = @_;
+sub setup {
+    ($targ, my $want) = @_;
+    $targ2 = uc $targ;
+    $want =~ s/%/$targ/g;
+    $want =~ s/#/$targ2/g;
+    $want;
+}
 
-    my $want = $setup->("foo", $pat);
-    my $str = eval $what;
+sub check {
+    my ($what, $pat, $eval) = @_;
+
+    my $want = setup "foo", $pat;
+    my $str  = $eval->();
 
     unless (ok defined $str,    "$what succeeds") {
         diag "\$\@: $@";
@@ -33,19 +42,23 @@ sub check_expr {
     }
     is_defer $str,              "$what returns an object"
         or return;
-    is "$defer", "foo",         "$what doesn't affect the original";
 
     try_forcing $str, $want,    $what;
 
-    $want = $setup->("bar", $pat);
+    $want = setup "bar", $pat;
     try_forcing $str, $want,    "deferred $what";
 }
 
-check_expr @$_, sub { 
-    ($targ, my $want) = @_;
-    $want =~ s/%/$targ/g;
-    $want;
-} for (
+sub check_expr {
+    my ($what) = @_;
+
+    check @_, sub { eval $what };
+
+    $targ = "baz";
+    is "$defer", "baz",         "$what doesn't affect the original";
+}
+
+check_expr @$_ for (
     ['$defer->concat("B")',                 "%B"    ],
     ['$defer->concat("A", 1)',              "A%"    ],
     ['$defer->concat("B")->concat("A", 1)', "A%B"   ],
@@ -59,29 +72,45 @@ check_expr @$_, sub {
     ['"A $defer B"',                        "A % B" ],
 );
 
-$defer2 = String::Defer->new(\my $targ2);
+$other = String::Defer->new(\$targ2);
 
-check_expr @$_, sub {
-    ($targ, my $want) = @_;
-    $targ2 = uc $targ;
-    $want =~ s/%/$targ/g;
-    $want =~ s/#/$targ2/g;
-    $want;
-} for (
-    ['$defer->concat($defer2)',                 "%#"        ],
-    ['$defer->concat($defer2, 1)',              "#%"        ],
-    ['$defer->concat("A")->concat($defer2)',    "%A#"       ],
+check_expr @$_ for (
+    ['$defer->concat($other)',                 "%#"        ],
+    ['$defer->concat($other, 1)',              "#%"        ],
+    ['$defer->concat("A")->concat($other)',    "%A#"       ],
 
-    ['$defer . $defer2',                        "%#"        ],
-    ['$defer . "A" . $defer2',                  "%A#"       ],
-    ['"A" . $defer . $defer2',                  "A%#"       ],
-    ['$defer . $defer2 . "A"',                  "%#A"       ],
+    ['$defer . $other',                        "%#"        ],
+    ['$defer . "A" . $other',                  "%A#"       ],
+    ['"A" . $defer . $other',                  "A%#"       ],
+    ['$defer . $other . "A"',                  "%#A"       ],
 
-    ['"${defer}$defer2"',                       "%#"        ],
-    ['"$defer A $defer2"',                      "% A #"     ],
-    ['"A ${defer}$defer2"',                     "A %#"      ],
-    ['"${defer}$defer2 A"',                     "%# A"      ],
-    ['"A $defer B $defer2 C"',                  "A % B # C" ],
+    ['"${defer}$other"',                       "%#"        ],
+    ['"$defer A $other"',                      "% A #"     ],
+    ['"A ${defer}$other"',                     "A %#"      ],
+    ['"${defer}$other A"',                     "%# A"      ],
+    ['"A $defer B $other C"',                  "A % B # C" ],
 );
+
+for (
+    ['"A"',             "%A"    ],
+    ['"A" . "B"',       "%AB"   ],
+    ['$other',          "%#"    ],
+    ['$copy',           "%%"    ],
+    ['$defer',          "%%"    ],
+) {
+    my ($what, $pat) = @$_;
+
+    my $copy = $defer;
+    my $addr = refaddr $defer;
+    $what = "\$copy .= $what";
+
+    check $what, $pat, sub { eval $what; $copy };
+
+    is refaddr $defer, $addr,       "$what leaves original unchanged";
+    isnt refaddr $copy, $addr,      "$what creates a new \$copy";
+
+    $targ = "baz";
+    is "$defer", "baz",             "$what leaves original unaffected";
+}
 
 done_testing;
