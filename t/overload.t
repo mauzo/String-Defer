@@ -137,7 +137,7 @@ sub mutate_ok {
         diag "\$\@: $@";
         return;
     }
-    TODO: if ($VALTODO) {
+    TODO: {
         local $TODO = $VALTODO;
         is $val, $want,             "$what is correct";
     }
