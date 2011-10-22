@@ -4,10 +4,12 @@ use warnings;
 use strict;
 
 use Test::More;
+use Test::Exception;
 use Exporter;
 our @ISA = "Exporter";
 our @EXPORT = (
     @Test::More::EXPORT,
+    @Test::Exception::EXPORT,
     qw/is_defer is_plain try_forcing/,
 );
 

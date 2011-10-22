@@ -6,6 +6,7 @@ Module::Build->new(
     requires        => {
     },
     build_requires  => {
+        "Test::Exception"   => 0,
         "Test::More"        => "0.65",
     },
 )->create_build_script;
