@@ -23,6 +23,14 @@ my %reftypes = map +($_, 1), (
     "VSTRING",  # my $x = v1;       ->new(\$x)
     "REF",      # my $x = \1;       ->new(\$x)
     "REGEXP",   # my $x = ${qr/x/}; ->new(\$x)
+
+    # This should be considered experimental. It may be more beneficial
+    # to treat a globref as a filehandle. I don't know if there's any
+    # way to distinguish between    my $x = *STDIN; \$x
+    # and either of                 \*STDIN
+    #                               open my $x, ...; $x
+    # I suspect SvREADONLY (on ref and on referent) would be a good
+    # heuristic, if I can get at it from Perl.
     "GLOB",     # my $x = *STDIN;   ->new(\$x)
     "LVALUE",   # my $x = "foo";    ->new(\substr($x, 0, 2))
                 # This will track that substring of the variable as it
