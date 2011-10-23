@@ -6,14 +6,16 @@ no warnings "uninitialized"; # SHUT UP
 
 our $VERSION = "1";
 
-use Carp;
-use Scalar::Util    qw/reftype blessed/;
 use overload        (
     q/""/       => "force",
     q/./        => "concat",
     fallback    => 1, # Why is this not the default?
 );
+use Exporter "import";
+our @EXPORT_OK = qw/djoin/;
 
+use Carp;
+use Scalar::Util    qw/reftype blessed/;
 # This list is a little bizarre, but so is the list of things
 # that can legitimately be stuffed into a scalar variable. If
 # BIND ever sees the light of day this will need revisiting.
@@ -88,12 +90,13 @@ sub force {
 # Join without forcing. The other string ops might be useful, and could
 # certainly be implemented with closures, but would be substantially
 # more complicated.
-sub join {
-    my ($class, $with, @strs) = @_;
-    # I may want to allow it as an object method later, but I'm not sure
-    # of the best semantics.
-    not ref $class and $class->isa(__PACKAGE__)
-        or croak "String::Defer->join is a class method";
+sub djoin {
+    my ($with, @strs) = @_;
+
+    # This always creates a String::Defer, which greatly reduces the
+    # utility of subclassing. I'm not sure if there's a good
+    # alternative, especially in the case where strings of different
+    # subclasses are joined.
 
     {   local $" = "|"; no overloading;
         carp "JOIN: [$with] [@strs]";
@@ -107,7 +110,7 @@ sub join {
         grep ref || length,
         (map { (_expand($_), @with) } @strs),
         @last,
-    ], $class;
+    ], __PACKAGE__;
 }
 
 1;

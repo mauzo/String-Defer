@@ -4,6 +4,7 @@ Module::Build->new(
     module_name     => "String::Defer",
     license         => "bsd",
     requires        => {
+        "Exporter"          => "5.57",
     },
     build_requires  => {
         "Test::Exception"   => 0,
