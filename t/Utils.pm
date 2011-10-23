@@ -5,13 +5,42 @@ use strict;
 
 use Test::More;
 use Test::Exception;
+use Test::Exports;
+
 use Exporter;
 our @ISA = "Exporter";
 our @EXPORT = (
     @Test::More::EXPORT,
     @Test::Exception::EXPORT,
-    qw/is_defer is_plain try_forcing/,
+    @Test::Exports::EXPORT,
+    qw/
+        is_defer is_plain try_forcing
+        *Format
+    /,
+
 );
+
+{   package PlainObject;
+    sub new { bless $_[1] || [] }
+}
+
+{   package StrOverload;
+    use overload q/""/ => sub { $_[0][0] };
+    sub new { bless [$_[1]] }
+}
+
+{   package ScalarOverload;
+    use overload q/${}/ => sub { \1 };
+    sub new { bless [] }
+}
+
+{   package CodeOverload;
+    use overload q/&{}/ => sub { sub { 1 } };
+    sub new { bless [] }
+}
+
+format Format =
+.
 
 sub is_defer {
     my ($obj, $name) = @_;
@@ -39,3 +68,6 @@ sub try_forcing {
         $B->is_eq($str, $want,  "$name $what gives correct contents");
     }
 }
+
+1;
+

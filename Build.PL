@@ -7,7 +7,8 @@ Module::Build->new(
         "Exporter"          => "5.57",
     },
     build_requires  => {
-        "Test::Exception"   => 0,
         "Test::More"        => "0.65",
+        "Test::Exception"   => "0.31",
+        "Test::Exports"     => "1",
     },
 )->create_build_script;

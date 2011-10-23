@@ -6,25 +6,6 @@ use warnings;
 use String::Defer;
 use t::Utils;
 
-{   package PlainObject;
-    sub new { bless $_[1] || [] }
-}
-
-{   package StrOverload;
-    use overload q/""/ => sub { $_[0][0] };
-    sub new { bless [$_[1]] }
-}
-
-{   package ScalarOverload;
-    use overload q/${}/ => sub { \1 };
-    sub new { bless [] }
-}
-
-{   package CodeOverload;
-    use overload q/&{}/ => sub { sub { 1 } };
-    sub new { bless [] }
-}
-
 sub check {
     my ($targ, $setup, $name) = @_;
 
@@ -78,6 +59,7 @@ for (
     ["ARRAY ref",                   []                          ],
     ["HASH ref",                    {}                          ],
     ["IO ref",                      *STDOUT{IO}                 ],
+    ["FORMAT ref",                  *Format{FORMAT}             ],
     ["plain object",                PlainObject->new            ],
     ["object based on scalar ref",  PlainObject->new(\my $targ) ],
     ["object based on code ref",    PlainObject->new(sub { 1 }) ],
