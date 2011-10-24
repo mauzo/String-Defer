@@ -11,4 +11,10 @@ Module::Build->new(
         "Test::Exception"   => "0.31",
         "Test::Exports"     => "1",
     },
+    meta_merge      => {
+        resources   => {
+            repository => "http://github.com/mauzo/String-Defer",
+            bugtracker => "https://rt.cpan.org/Public/Dist/Display.html?Name=String-Defer",
+        },
+    },
 )->create_build_script;

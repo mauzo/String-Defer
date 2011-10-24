@@ -1,0 +1,12 @@
+Build.PL
+lib/String/Defer.pm
+MANIFEST			This list of files
+t/00use.t
+t/defer.t
+t/expr.t
+t/join.t
+t/overload.t
+t/ref.t
+t/Utils.pm
+META.yml
+META.json

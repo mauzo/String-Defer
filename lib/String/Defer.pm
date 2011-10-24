@@ -279,6 +279,10 @@ makes no attempt to merge adjacent constant strings. Join, in
 particular, will return a deferred string even if passed all plain
 strings, which should really be fixed.
 
+=head1 AUTHOR
+
+Ben Morrow <ben@morrow.me.uk>
+
 =head1 COPYRIGHT
 
 Copyright 2011 Ben Morrow <ben@morrow.me.uk>.
