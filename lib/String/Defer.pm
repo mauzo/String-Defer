@@ -90,16 +90,18 @@ sub force {
 # Join without forcing. The other string ops might be useful, and could
 # certainly be implemented with closures, but would be substantially
 # more complicated.
-sub djoin {
-    my ($with, @strs) = @_;
+sub join {
+    my ($class, $with, @strs) = @_;
 
-    # This always creates a String::Defer, which greatly reduces the
-    # utility of subclassing. I'm not sure if there's a good
-    # alternative, especially in the case where strings of different
-    # subclasses are joined.
+    # This is a class method (a constructor, in fact), to allow
+    # subclasses later, but the implementation may need adjusting. I
+    # probably shouldn't be poking in the objects' guts directly, and
+    # using a ->pieces method or something instead. 
+    # OTOH, @{} => "pieces" would Just Work...
+    ref $class and croak "String::Defer->join is a class method";
 
     {   local $" = "|"; no overloading;
-        carp "JOIN: [$with] [@strs]";
+        carp "JOIN: [$with] [@strs] -> [$class]";
     }
 
     # This could be optimised, but stick with the simple implementation
@@ -110,7 +112,11 @@ sub djoin {
         grep ref || length,
         (map { (_expand($_), @with) } @strs),
         @last,
-    ], __PACKAGE__;
+    ], $class;
 }
+
+# Utility sub since C<String::Defer->join()> is rather a mouthful. This
+# always creates a String::Defer, rather than a subclass.
+sub djoin { __PACKAGE__->join(@_) }
 
 1;

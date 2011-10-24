@@ -39,6 +39,10 @@ our @EXPORT = (
     sub new { bless [] }
 }
 
+{   package t::Subclass;
+    our @ISA = "String::Defer";
+}
+
 format Format =
 .
 
