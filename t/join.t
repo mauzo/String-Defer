@@ -101,7 +101,7 @@ for (
     ($] >= 5.010 ? (
         [VSTRING        => \v1                                          ],
         [REGEXP         => ${qr/x/},    
-                            ($] > 5.012 ? quotemeta(qr/x/) : "")        ],
+                            ($] >= 5.012 ? quotemeta(qr/x/) : "")       ],
     ) : () ),
         [LVALUE         => \substr(my $x = "x", 0, 1)                   ],
         [ARRAY          => []                                           ],
