@@ -1,1 +1,7 @@
 Revision history for String::Defer.
+
+1       2011-10-24
+    Initial release.
+        - Deferring of scalar or code refs.
+        - Deferred concatenation.
+        - Deferred joins.
