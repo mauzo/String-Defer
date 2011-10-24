@@ -100,7 +100,7 @@ for (
         ($? >= 5.010 ?
         [REGEXP         => ${qr/x/},            "".qr/x/                ]
             : () ),
-        [LVALUE         => \substr(my $x, 0, 1)                         ],
+        [LVALUE         => \substr(my $x = "x", 0, 1)                   ],
         [ARRAY          => []                                           ],
         [HASH           => {}                                           ],
         [CODE           => sub { 1 }                                    ],
