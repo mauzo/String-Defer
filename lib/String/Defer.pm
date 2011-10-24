@@ -58,9 +58,9 @@ sub _expand { eval { $_[0]->isa(__PACKAGE__) } ? @{$_[0]} : "$_[0]" }
 
 sub concat {
     my ($self, $str, $reverse) = @_;
-    {   local $" = "|"; no overloading;
-        carp "CONCAT: [@$self] [$str] $reverse";
-    }
+#    {   local $" = "|"; no overloading;
+#        carp "CONCAT: [@$self] [$str] $reverse";
+#    }
     my $class = Scalar::Util::blessed $self
         or croak "String::Defer->concat is an object method";
 
@@ -73,9 +73,9 @@ sub concat {
 
 sub force {
     my ($self) = @_;
-    {   local $" = "|"; no overloading;
-        carp "FORCE: [@$self]";
-    }
+#    {   local $" = "|"; no overloading;
+#        carp "FORCE: [@$self]";
+#    }
     join "", map +(
         ref $_ 
             # Any objects should have been rejected or stringified by
@@ -100,9 +100,9 @@ sub join {
     # OTOH, @{} => "pieces" would Just Work...
     ref $class and croak "String::Defer->join is a class method";
 
-    {   local $" = "|"; no overloading;
-        carp "JOIN: [$with] [@strs] -> [$class]";
-    }
+#    {   local $" = "|"; no overloading;
+#        carp "JOIN: [$with] [@strs] -> [$class]";
+#    }
 
     # This could be optimised, but stick with the simple implementation
     # for now.
