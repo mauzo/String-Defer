@@ -97,7 +97,7 @@ for (
 
     for (
         [SCALAR         => \1                                           ],
-        [REF            => \\1                                          ],
+        [REF            => \\1, ($] >= 5.008 ? "REF$hex" : "SCALAR$hex")],
     ($] >= 5.010 ? (
         [VSTRING        => \v1                                          ],
         [REGEXP         => ${qr/x/},    
@@ -110,7 +110,9 @@ for (
         [GLOB           => \*STDOUT,                                    ],
         [IO             => *STDOUT{IO},         
                 ($] > 5.011 ? "IO::File=IO$hex" : "IO::Handle=IO$hex")  ],
+    ($] >= 5.008 ? (
         [FORMAT         => *Format{FORMAT}                              ],
+    ) : () ),
         ["plain object" => PlainObject->new,    "PlainObject=ARRAY$hex" ],
     ) {
         my ($rtype, $ref, $pat) = @$_;
