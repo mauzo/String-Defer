@@ -93,29 +93,33 @@ for (
     }
 
     settarg qw/foo/;
+    my $hex = "\\(0x[[:xdigit:]]+\\)";
+
     for (
         [SCALAR         => \1                                           ],
-        [VSTRING        => \v1                                          ],
         [REF            => \\1                                          ],
-        ($? >= 5.010 ?
-        [REGEXP         => ${qr/x/},            "".qr/x/                ]
-            : () ),
+    ($] >= 5.010 ? (
+        [VSTRING        => \v1                                          ],
+        [REGEXP         => ${qr/x/},    
+                            ($] > 5.012 ? quotemeta(qr/x/) : "")        ],
+    ) : () ),
         [LVALUE         => \substr(my $x = "x", 0, 1)                   ],
         [ARRAY          => []                                           ],
         [HASH           => {}                                           ],
         [CODE           => sub { 1 }                                    ],
         [GLOB           => \*STDOUT,                                    ],
-        [IO             => *STDOUT{IO},         "IO::File=IO"           ],
+        [IO             => *STDOUT{IO},         
+                ($] > 5.011 ? "IO::File=IO$hex" : "IO::Handle=IO$hex")  ],
         [FORMAT         => *Format{FORMAT}                              ],
-        ["plain object" => PlainObject->new,    "PlainObject=ARRAY"     ],
+        ["plain object" => PlainObject->new,    "PlainObject=ARRAY$hex" ],
     ) {
         my ($rtype, $ref, $pat) = @$_;
 
-        $pat ||= $rtype;
+        defined $pat or $pat = "$rtype$hex";
         my $join = eval { $joiner->(":", $defer[0], $ref) };
 
         ok defined $join,           "$jtype of $rtype ref succeeds";
-        like "$join", qr/^foo:$pat\(0x[[:xdigit:]]+\)$/,
+        like "$join", qr/^foo:$pat$/,
                                     "$jtype stringifies $rtype refs";
     }
 

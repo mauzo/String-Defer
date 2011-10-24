@@ -110,19 +110,21 @@ overload_ok '<$defer[0]>',              "Build.PL";
 
 $targ = "DATA";
 overload_nok @$_ for (
-    ['<$defer>',        qr/Not a GLOB reference/    ],
-    ['$$defer',         qr/Not a SCALAR reference/  ],
-    ['%$defer',         qr/Not a HASH reference/    ],
-    ['$defer->()',      qr/Not a CODE reference/    ],
-    ['*$defer',         qr/Not a GLOB reference/    ],
+    ['<$defer>',        qr/Not a GLOB reference/            ],
+    ['$$defer',         qr/Not a SCALAR reference/          ],
+( $] >= 5.010 ? (
+    ['%$defer',         qr/Not a HASH reference/            ],
+) : (
+    ['%$defer',         qr/Can't coerce array into hash/    ],
+) ),
+    ['$defer->()',      qr/Not a CODE reference/            ],
+    ['*$defer',         qr/Not a GLOB reference/            ],
 );
 
-if ($] > 5.010) {
+SKIP: {
+    $] < 5.010 and skip "No smartmatch before 5.10", 1;
     $targ = "XXX";
     overload_ok '$defer ~~ "XXX"', 1;
-}
-else {
-    skip 1, "No smartmatch before 5.10";
 }
 
 our $VALTODO;
