@@ -12,6 +12,7 @@ BEGIN {
         feature->import(":5.10");
     }
     else {
+        no warnings "once";
         *state = sub { };
         use vars '$st';
     }
