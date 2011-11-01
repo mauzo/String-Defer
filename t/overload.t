@@ -123,6 +123,7 @@ overload_nok @$_ for (
 
 SKIP: {
     $] < 5.010 and skip "No smartmatch before 5.10", 1;
+    $] == 5.010 and skip "Smartmatch broken in 5.10.0", 1;
     $targ = "XXX";
     overload_ok '$defer ~~ "XXX"', 1;
 }
