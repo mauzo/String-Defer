@@ -239,6 +239,75 @@ sub djoin { __PACKAGE__->join(@_) }
 
 Please report any bugs to <bug-String-Defer@rt.cpan.org>.
 
+=head2 Bugs in perl
+
+=head3 Assignment to an existing lexical
+
+Under some circumstances an assignment like
+
+    my $defer = String::Defer->new(\my $targ);
+    my $x;
+    $x = "A $defer B";
+
+will leave C<$x> holding a plain string rather than a C<String::Defer>,
+because perl calls stringify overloading earlier than it needed to. This
+happens if (and only if)
+
+=over 4
+
+=item -
+
+a double-quoted string (with an interpolated C<String::Defer>) is assigned
+to a lexical scalar;
+
+=item -
+
+that lexical has already been declared;
+
+=item -
+
+no other operators intervene between the interpolation and the
+assignment;
+
+=item -
+
+the interpolation has at least three pieces (so, two constant sections
+with a variable between them, or vice versa, or more pieces than that).
+
+=back
+
+So the following are all OK:
+
+    my $x   = "A $defer B";         # newly declared lexical
+    my %h;
+    $h{x}   = "A $defer B";         # hash element, not lexical scalar
+    $x      = "A $defer";           # only two pieces
+    $x      = "" . "A $defer B";    # intervening operator
+
+The simplest workaround is to turn at least one section of the
+interpolation into an explicit concatenation, or even just to
+concatenate an empty string as in the last example above.
+
+This applies to C<state> as well as to C<my> variables, but not to
+C<our> globals, despite their partially lexical scope.
+
+=head3 C<++> and C<-->
+
+The increment and decrement operators don't appear to honour the
+stringify overloading, and instead operate on the numerical refaddr of
+the object. Working aroung this in this module is a little tricky, since
+the calling convention of the C<++> and C<--> overloads assume you want
+the object to stay an object, whereas what we want here is a plain
+string. C<+=> and C<-=> work correctly, and B<do> leave you with a plain
+string.
+
+=head3 Tied scalars
+
+Before perl 5.14, tied scalars don't always honour overloading properly.
+A tied scalar whose C<FETCH> returns a C<String::Defer> will instead
+appear to contain a plain string at least the first time it is
+evaluated. As of 5.14, this has been fixed.
+
 =head2 Subclassing
 
 Subclassing is currently rather fragile. The implementation assumes the
