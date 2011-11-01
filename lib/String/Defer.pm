@@ -4,7 +4,7 @@ use warnings;
 use strict; 
 no warnings "uninitialized"; # SHUT UP
 
-our $VERSION = "1";
+our $VERSION = "2";
 
 =head1 NAME
 

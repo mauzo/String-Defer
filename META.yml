@@ -9,7 +9,7 @@ build_requires:
 configure_requires:
   Module::Build: 0.38
 dynamic_config: 1
-generated_by: 'Module::Build version 0.3901, CPAN::Meta::Converter version 2.112621'
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.112621'
 license: bsd
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -18,11 +18,11 @@ name: String-Defer
 provides:
   String::Defer:
     file: lib/String/Defer.pm
-    version: 1
+    version: 2
 requires:
   Exporter: 5.57
 resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=String-Defer
   license: http://opensource.org/licenses/bsd-license.php
   repository: http://github.com/mauzo/String-Defer
-version: 1
+version: 2
