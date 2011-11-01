@@ -3,3 +3,4 @@ _build
 blib
 *.bak
 MYMETA.*
+String-Defer-*
