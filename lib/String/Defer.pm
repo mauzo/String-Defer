@@ -71,7 +71,7 @@ support passing a globref as a filehandle, and I'm not sure it's
 possible to distinguish between 'a ref to a scalar variable which
 happens to be currently holding a glob' and 'a ref to a real glob'.
 
-It also B<is> possible to pass a ref to a substring of another string,
+It is also possible to pass a ref to a substring of another string,
 like this:
 
     my $targ = "one two three";
@@ -81,8 +81,10 @@ like this:
     $targ = uc $targ; say $defer;   # TWO
 
 The C<String::Defer> will track that substring of the target string as
-it changes, but be aware that the target has to contain a long enough
-string at the time the substring is taken for this to work correctly.
+it changes. Before perl 5.16, the target string must be long enough at
+the time the reference is created for this to work correctly; this has
+been fixed in the development version of perl, which will be released as
+5.16.
 
 =cut
 

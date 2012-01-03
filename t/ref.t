@@ -50,8 +50,15 @@ sub check {
     check \substr($targ, 1, 3), sub { $targ = "XfooX"; "foo" },
         "\\substr()";
 
+    my $want = do {
+        my $targ = "X";
+        my $ref = \substr($targ, 1, 3);
+        $targ = "XXXXX";
+        "$$ref";
+    };
+
     $targ = "X";
-    check \substr($targ, 1, 3), sub { $targ = "XXXXX"; "" },
+    check \substr($targ, 1, 3), sub { $targ = "XXXXX"; $want },
         "\\substr(<outside>)";
 }
 
