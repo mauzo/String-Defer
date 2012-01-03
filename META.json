@@ -35,7 +35,7 @@
    "provides" : {
       "String::Defer" : {
          "file" : "lib/String/Defer.pm",
-         "version" : "2"
+         "version" : "3"
       }
    },
    "release_status" : "stable",
@@ -50,5 +50,5 @@
          "url" : "http://github.com/mauzo/String-Defer"
       }
    },
-   "version" : "2"
+   "version" : "3"
 }

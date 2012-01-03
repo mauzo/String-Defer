@@ -18,11 +18,11 @@ name: String-Defer
 provides:
   String::Defer:
     file: lib/String/Defer.pm
-    version: 2
+    version: 3
 requires:
   Exporter: 5.57
 resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=String-Defer
   license: http://opensource.org/licenses/bsd-license.php
   repository: http://github.com/mauzo/String-Defer
-version: 2
+version: 3
